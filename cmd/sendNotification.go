@@ -21,8 +21,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// NotificationTitle holds the notification title gotten from the flag
-var NotificationTitle string
+var (
+	// NotificationTitle holds the notification title gotten from the flag
+	NotificationTitle string
+	// NotificationDesc holds the description of the notification that will be sent
+	NotificationDesc string
+)
 
 
 // sendNotificationCmd represents the sendNotification command
@@ -36,13 +40,14 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Sending a notification with the title of \"%s\"\n", NotificationTitle)
+		fmt.Printf("Sending a notification with the title of \"%s\" and a description of \"%s\" \n", NotificationTitle, NotificationDesc)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(sendNotificationCmd)
-	sendNotificationCmd.Flags().StringVarP(&NotificationTitle, "notification-title", "t", "join-cli", "Set the title of the notification")
+	sendNotificationCmd.Flags().StringVarP(&NotificationTitle, "notification-title", "t", "join-cli", "Sets the title of the notification")
+	sendNotificationCmd.Flags().StringVarP(&NotificationDesc, "notification-desc", "d", "Sent from join-cli", "Sets the description of the notification")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
