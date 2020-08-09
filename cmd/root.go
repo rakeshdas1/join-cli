@@ -24,7 +24,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	cfgFile string
+	// APIKey holds the join api key to authenticate with the join api
+	APIKey string
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -55,6 +59,10 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.join-cli.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&APIKey, "api-key", "k", "", "Join api key to authenticate with the join api (required)")
+	rootCmd.MarkPersistentFlagRequired("api-key")
+	// look for api key in the config file
+	viper.BindPFlag("api-key", rootCmd.Flags().Lookup("api-key"))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -85,4 +93,5 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+	fmt.Printf("Got api key of %s\n", APIKey)
 }
