@@ -1,4 +1,5 @@
-module github.com/rakeshdas1/join-cli.git
+// module github.com/rakeshdas1/join-cli.git
+module join-cli
 
 go 1.14
 
