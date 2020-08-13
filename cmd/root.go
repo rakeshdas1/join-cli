@@ -17,8 +17,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -83,8 +84,9 @@ func initConfig() {
 		}
 
 		// Search config in home directory with name ".join-cli" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".join-cli")
+		viper.AddConfigPath(home + "/.config/join-cli")
+		viper.SetConfigName("join-cli")
+		viper.SetConfigType("json")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -92,6 +94,9 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	} else {
+		fmt.Println("Did not find a config file, writing a new one...")
+		viper.WriteConfig()
 	}
 	fmt.Printf("Got api key of %s\n", APIKey)
 }
