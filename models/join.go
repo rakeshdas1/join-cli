@@ -1,6 +1,10 @@
 package models
 
-import "net/http"
+import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+)
 
 // struct for device info
 type deviceInfo struct {
@@ -28,4 +32,37 @@ type Client struct {
 	httpClient *http.Client
 	BaseURL    string
 	APIKey     string
+}
+
+// makes a GET request to the provided URL
+func (c *Client) makeGetRequest(url string) ([]byte, error) {
+	fmt.Println("Making the get req to " + url)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// set the api key in the request header
+	req.Header.Set("X-Api-Key", c.APIKey)
+	resp, err := doReq(req, c.httpClient)
+	if err != nil {
+		return nil, err
+	}
+	return resp, err
+}
+
+func doReq(req *http.Request, client *http.Client) ([]byte, error) {
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if 200 != resp.StatusCode {
+		return nil, fmt.Errorf("%s", body)
+	}
+	return body, nil
 }
