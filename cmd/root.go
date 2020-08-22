@@ -58,12 +58,11 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	// look for api key in the config file
-	viper.BindPFlag("api-key", rootCmd.PersistentFlags().Lookup("api-key"))
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.join-cli.json)")
 	rootCmd.PersistentFlags().StringVarP(&APIKey, "api-key", "k", "", "Join api key to authenticate with the join api (required)")
-	rootCmd.MarkPersistentFlagRequired("api-key")
+	// look for api key in the config file
+	viper.BindPFlag("api-key", rootCmd.PersistentFlags().Lookup("api-key"))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -99,5 +98,5 @@ func initConfig() {
 		// viper.WriteConfigAs("~/.config/join-cli/join-cli.json")
 		viper.SafeWriteConfig()
 	}
-	fmt.Printf("Got api key of %s\n", APIKey)
+	fmt.Printf("Got api key of %s\n", viper.GetString("api-key"))
 }
