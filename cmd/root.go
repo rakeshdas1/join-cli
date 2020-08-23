@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"join-cli/models"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -40,7 +41,15 @@ var rootCmd = &cobra.Command{
 	running task finally finishes running, such as a big download or a complex build.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("Running root cmd")
+		var joinClient models.JoinAPIClient
+		joinClient.BaseURL = "https://joinjoaomgcd.appspot.com/"
+		joinClient.APIKey = viper.GetString("api-key")
+		joinClient.NewHTTPClient()
+		resp, _ := joinClient.GetAllDevices()
+		fmt.Printf("%+v\n", resp)
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -99,4 +108,5 @@ func initConfig() {
 		viper.SafeWriteConfig()
 	}
 	fmt.Printf("Got api key of %s\n", viper.GetString("api-key"))
+
 }

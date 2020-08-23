@@ -1,9 +1,12 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"path"
 )
 
 // struct for device info
@@ -27,15 +30,15 @@ type baseResponse struct {
 	Records       []deviceInfo `json:"records"`
 }
 
-// Client struct for the main http client
-type Client struct {
+// JoinAPIClient struct for the main http client
+type JoinAPIClient struct {
 	httpClient *http.Client
 	BaseURL    string
 	APIKey     string
 }
 
 // makes a GET request to the provided URL
-func (c *Client) makeGetRequest(url string) ([]byte, error) {
+func (c *JoinAPIClient) makeGetRequest(url string) ([]byte, error) {
 	fmt.Println("Making the get req to " + url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -65,4 +68,34 @@ func doReq(req *http.Request, client *http.Client) ([]byte, error) {
 		return nil, fmt.Errorf("%s", body)
 	}
 	return body, nil
+}
+func (c *JoinAPIClient) constructAPIRequestURL(APIPath string) (apiReqURL string) {
+	u, _ := url.Parse(c.BaseURL)
+	u.Path = "_ah/api/registration/v1"
+	u.Path = path.Join(u.Path, url.QueryEscape(APIPath))
+	q := u.Query()
+	q.Set("apikey", c.APIKey)
+	u.RawQuery = q.Encode()
+	return u.String()
+}
+func (c *JoinAPIClient) GetAllDevices() (*baseResponse, error) {
+	var APIListAllDevicesPath = "listDevices"
+
+	// container for API response
+	var returnedResponse *baseResponse
+
+	reqURL := c.constructAPIRequestURL(APIListAllDevicesPath)
+
+	resp, err := c.makeGetRequest(reqURL)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal([]byte(resp), &returnedResponse)
+	return returnedResponse, nil
+}
+func (c *JoinAPIClient) NewHTTPClient() error {
+	if c.httpClient == nil {
+		c.httpClient = http.DefaultClient
+	}
+	return nil
 }
