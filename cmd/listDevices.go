@@ -17,8 +17,10 @@ package cmd
 
 import (
 	"fmt"
+	"join-cli/models"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // listDevicesCmd represents the listDevices command
@@ -33,6 +35,24 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("listDevices called")
+		var joinClient models.JoinAPIClient
+		joinClient.BaseURL = "https://joinjoaomgcd.appspot.com/"
+		joinClient.APIKey = viper.GetString("api-key")
+		joinClient.NewHTTPClient()
+		resp, _ := joinClient.GetAllDevices()
+		fmt.Printf("%+v\n", resp)
+		numOfDevices := len(resp.Records)
+		if numOfDevices <= 0 {
+			fmt.Printf("Didn't find any devices on this account!\n")
+		} else if numOfDevices == 1 {
+			fmt.Printf("Found 1 device on this account: \n")
+		} else {
+			fmt.Printf("Found %d devices on this account: \n", numOfDevices)
+		}
+
+		for _, device := range resp.Records {
+			fmt.Printf("\t - %s\n", device.DeviceName)
+		}
 	},
 }
 

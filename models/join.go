@@ -95,6 +95,7 @@ func (c *JoinAPIClient) GetAllDevices() (*baseResponse, error) {
 }
 func (c *JoinAPIClient) NewHTTPClient() error {
 	if c.httpClient == nil {
+		fmt.Printf("Http Client does not exist, creating a new one..\n")
 		c.httpClient = http.DefaultClient
 	}
 	return nil
